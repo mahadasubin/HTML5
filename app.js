@@ -31,7 +31,7 @@ io.sockets.on('connection', function (socket) {
     socket.emit('message', 'You are connected!');
     socket.broadcast.emit('message', 'Another client has just connected!');
     
-    socket.on('little_newbie', function(username) {
+    socket.on('user', function(username) {
         socket.username = username;
    });
     
