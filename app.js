@@ -36,8 +36,8 @@ io.sockets.on('connection', function (socket) {
    });
     
     socket.on('message', function (message) {
-       console.log('A client is speaking to me! They’re saying: ' + message);
-    }); 
+    console.log(socket.username + ' is speaking to me! They\'re saying: ' + message);
+});
 
 });
 
