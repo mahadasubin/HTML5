@@ -32,7 +32,7 @@
 
             // It's sent with the signal "little_newbie" (to differentiate it from "message")
 
-            socket.emit('little_newbie', username);
+            socket.emit('user', username);
 
             socket.on('message', function(message) {
 
