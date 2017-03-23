@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Registration</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+</head>
+<body ng-app="app.register">
+
+<div class="container" ng-controller="registercntrl">
+
+    <div class="jumbotron" style="padding:10px; text-align:center">
+        <h2>Sign-Up Form</h2>
+    </div>
+
+    <ng-form class="form-horizontal" name="regForm" ng-hide="isSubmit">
+
+        <div class="form-group" ng-class="{ 'has-error' : regForm.email.$invalid }">
+            <label class="control-label col-sm-2" for="email">Email:</label>
+            <div class="col-sm-8">
+                <input type="email" name="email" class="form-control" id="email" ng-blur="eBlur=true" placeholder="Enter email" ng-model="user.email" required ng-maxlength="56">
+                <p ng-show="regForm.email.$invalid&& eBlur" >Enter a valid email.</p>
+                <p ng-show="regForm.email.$error.maxlength">Email should not exceed 56 characters</p>
+            </div>
+        </div>
+
+        <div class="form-group" ng-class="{ 'has-error' : regForm.password.$invalid }">
+            <label class="control-label col-sm-2" for="pwd1">Password:</label>
+            <div class="col-sm-8">
+                <input type="password" name="password" class="form-control" id="pwd1" ng-blur="pBlur=true" placeholder="Enter password" required ng-model="pswd1" ng-minlength="6">
+                <p ng-show="regForm.password.$error.minlength && pBlur">Min password length is 6 characters.</p>
+                <p ng-show="regForm.password.$invalid&& pBlur" >Password is required to be filled.</p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="pwd2" >Confirm Password:</label>
+            <div class="col-sm-8">
+                <input type="password" class="form-control" id="pwd2" placeholder="Confirm password" required ng-model="pswd2" ng-blur="checkpswd()">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="firstname">First Name:</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="firstname" ng-class="{ 'has-error' : regForm.firstname.$invalid }" required ng-blur="fBlur=true" name= "firstname" placeholder="First Name" ng-model="user.firstname" >
+                <p ng-show="regForm.firstname.$invalid && fBlur" >Enter your First Name.</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="lastname">Last Name:</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="lastname" placeholder="Last Name" ng-model="user.lastname">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="birthday">Date of Birth:</label>
+            <div class="col-sm-8">
+                <input type="date"   date-picker class="form-control" id="birthday"  placeholder="mm/d/yyyy" name="dob" ng-blur="agecheck()" required ng-model="user.birthday">
+                <p ng-show="ageinvalid" >You should be above 14yrs old and below 150yrs old</p>
+            </div>
+        </div>
+
+    </ng-form>
+
+
+    <div ng-show="isSubmit">
+        <div class="col-sm-8">Full Name:<b>{{user.firstname+ " " + user.lastname}}</b></div><br />
+        <div class="col-sm-8">User email:<b>{{user.email}}</b></div><br />
+        <div class="col-sm-8">DOB&nbsp&nbsp&nbsp:<b>{{user.birthday.getMonth()+"/"+user.birthday.getDate()+"/"+user.birthday.getFullYear()}}</b></div><br>
+        <br>
+            <label class="control-label col-sm-2" for="details">Enter your details with interest</label><div class="col-sm-10"><textarea cols="100" rows="10" id="details" placeholder="Add your interests"></textarea></div></br>
+        <br><label class="control-label col-sm-2" for="file">Upload your biodata</label><div class="col-sm-8"><input type="file" id="file"></div><br>
+        </ng-form> <br/>
+    </div>
+
+    <div >
+        <div class="col-sm-offset-2 col-sm-2">
+            <button type="submit" ng-disabled="regForm.email.$invalid || regForm.pswd.$invalid || regForm.firstname.$invalid || ageinvalid" ng-click="isSubmit=true"  class="btn btn-lg btn-primary btn-block">Submit</button>
+        </div>
+    </div>
+
+</div>
+<script>
+    angular.module('app.register', [])
+
+        .directive('datePicker', function() {
+            return {
+                restrict: 'E',
+                require: 'ngModel',
+                link : function (scope, element, attrs, registercntrl) {
+                    $(function(){
+                        element.datepicker({
+                            dateFormat:'dd/mm/yyyy',
+                            onSelect:function (date) {
+                                scope.user.birthday=new Date(date);
+                                scope.$apply();
+                            }
+                        });
+                    });
+                }
+            };
+        })
+
+
+        .controller('registercntrl', ['$scope',function($scope) {
+            $scope.user = {};
+            $scope.checkpswd = function(){
+                if($scope.pswd1===$scope.pswd2){
+                    $scope.user.password = $scope.pswd1
+                }
+                else{ alert ("Password not matching");
+                $scope.pswd1='';
+                $scope.pswd2='';}
+            }
+            $scope.agecheck=function(){
+                $scope.ageinvalid=false;
+                var year=new Date().getFullYear();
+            var minAge=14;
+            var maxAge=150;
+            var age=year-$scope.user.birthday.getFullYear();
+            if(age < minAge || age > maxAge){
+                $scope.ageinvalid=true;
+            }
+            };
+
+        }])
+
+
+</script>
+</body>
+</html>
+
